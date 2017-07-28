@@ -14,6 +14,7 @@ pipeline {
             steps {
                 sh 'mvn clean install'
                 junit '**/target/surefire-reports/TEST-*.xml'
+                checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '', unHealthy: ''
             }
 
             post {
