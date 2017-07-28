@@ -1,0 +1,155 @@
+h1. Overview
+
+The BankIS project is a standalone war that takes incoming messages and transforms them in to ISO8583 messages for routing to Bank. The supported outgoing messages are;
+
+ * [Outgoing Messages|apidocs/com/company/is/bank/message/package-summary.html]
+
+The BankIS uses the ep-atmx connector to send ISO8583 (astbbm-atmx-bank-rar)  and ep-cryptography-rar for encryption and decryption.
+
+Links to:
+
+[Common Errors|bankcommonerrors]
+
+[Bank Simi Usage|banksimi]
+
+[Bank Error Codes|bankerrorcodes]
+
+
+h2. Deployment
+
+h3. Connector Deployment
+
+There are two different adapters required
+
+ * {{astbbm-atmx-bank-rar}} For connecting to the Bank switch
+ * {{ep-cryptography-rar}} For crypto functions
+
+Each of these connectors will export a specific JNDI name which the application will use
+to connect. In addition the astbbm-atmx-bank-rar Connector Connection Pool requires ServerHostList
+to be set. This is configured through the CD script, and for developers is localhost:10101
+
+
+h3. Runtime Connector Initialisation - Security
+
+In addition to the adapter, the connector requires additional initialisation from an application running
+in the same deployment. 
+
+# Initialisation of the SecurityService implementation
+ is in [SecurityServiceAdapter|apidocs/com/company/is/bank/security/SecurityServiceAdapter.html] and together with
+ [SecurityHelper|apidocs/com/company/is/bank/security//SecurityHelper.html] HSM access to the connector.
+
+The BankIS does this in the the security.xml.
+
+h3. Simulator for Bank
+
+The {{ep-atmx-sim.war}} web application can be deployed during development as a switch simulator.  The
+simulator will generate reasonable responses for the various network management and transaction messages. The
+Bank sim is located at /atmx-sim/bankSimi.jsp. Reject scenarios based on PAN, MSISDN and Amount can be
+set, together with the response code. Further details are [here|banksimi].
+
+By default each request will be processed synchronously with no delay, the response code will be determined by
+the final digits of the PAN.  The following system properties are available to alter these defaults.
+
+|| System Property || Type || Description ||
+| atmx.internal.sim.delay | Integer | Number of milliseconds to delay each response message by |
+| atmx.internal.sim.threadsize | Integer | The number of threads to use to process requests |
+| atmx.internal.sim.force.positive.response | boolean | true to return all positive responses |
+
+h3. Database Configuration
+
+The BankIS connects to the core schema using a special user that has limited access.
+This access is limited to link_reconciliation_record, link_zone_master_key, settlement_date
+together with the sequences related to those tables. Instructions for setting up the user can be found
+in companyCoreDB/baselines/Enterprise_230_baseline/ASTBBM/README
+
+h3. JVM Configuration
+
+The following configurations are required for the BankIS
+
+|| System Property || Description ||
+| -Dactivemq.broker.url=tcp://\{activemqhost\}:61616 | For pulling the messages down from core |
+| -Duser.language=in | The user language |
+| -Duser.country=ID| The user country |
+| -Datmx.jndi.name=eis/atmx/bank | The jndi look up for the atmx connector |
+| -DMATM\_SYM\_KEY= | For HSM look ups to decrypt data |
+| -DMATM\_SYM\_KEY\_KEK | For HSM look ups to decrypt data |
+
+These values are all cnofigured through CD
+
+h3. Connector Properties (ATMX)
+
+Generally the pre-packaged connectors will have the correct settings as defaults in the ra.xml however these can
+be overridden as necessary in the deployment.
+
+|| config-property || Description ||
+| ListeningPort | The port number to accept connections on |
+| ClientConnectionTimeout | |
+| HeartBeatInterval | The number of seconds between each heart beat message sent to the remote switch |
+| ServerHostList | The remote switch to connect to, provided for active connections and used in place of ListeningPort |
+
+h3. Continuous Delivery
+
+The Bank IS is deployed through the ASTBBM int*.conf files.
+
+h2. Development
+
+h3. Switch Requests
+
+Please read and understand the site documents on the ep-atmx project.
+
+h3. Understanding the flow
+
+The following outlines the flow of messages to and from the BankIS.
+
+All incoming XML messages are from the matm-268-100-ep-is-spec.
+
+The key is the spring-camel-config.xml. This pulls messages off the JMS and uses camel routing to pass them on to a handler.
+
+So for example, registerCustomerRequest:
+{code}
+		<route id="registerCustomerRequest">
+			<from uri="activemq:registerCustomerRequest?concurrentConsumers=10" />
+			<unmarshal ref="integrationServerJaxb" />
+			<bean ref="createRegisterCustomerMessage" />
+			<bean ref="switchComponent" />
+			<bean ref="createRegisterCustomerResponse" />
+			<marshal ref="integrationServerJaxb" />
+		</route>
+{code}
+The incoming request will be routed off to createRegisterCustomerMessage (defined in bank-message.xml). This will call the 
+the DefaultBankMessageFactory which will look for the correct message builder, by determining the request type like this:
+{code}
+	<util:constant id="registerCustomerRequest"
+		static-field="com.company.is.common.RequestTypes.REGISTER_CUSTOMER_REQUEST" />
+{code}
+Which will look inside the messageBuilder map (defined in bank-is.xml) for the correct builder:
+{code}
+	<bean id="messageFactory"
+		class="com.company.is.bank.message.DefaultBankMessageFactory">
+		<property name="requestMapping">
+			<map>
+				<entry key-ref="registerCustomerRequest" value-ref="registrationMessageBuilder" />
+				<entry key-ref="prepayRequest" value-ref="phoneReloadMessageBuilder" />
+				<entry key-ref="setPasscodeRequest" value-ref="createTINMessageBuilder" />
+				<entry key-ref="getCustomerAccountsSummariesRequest"
+					value-ref="bulkInquiryMessageBuilder" />
+				<entry key-ref="getCashCodeRequest" value-ref="cashReservationMessageBuilder" />
+				<entry key-ref="getStatementRequest" value-ref="miniStatementMessageBuilder" />
+				<entry key-ref="newTINRequest" value-ref="createTINMessageBuilder" />
+				<entry key-ref="submitPaymentRequest" value-ref="transferMessageBuilder" />
+				<entry key-ref="transferRequest" value-ref="transferMessageBuilder" />
+				<entry key-ref="infoInquiryRequest" value-ref="infoInquiryMessageBuilder" />
+				<entry key-ref="getFundsTransferAccountListRequest" value-ref="infoInquiryMessageBuilder" />
+				<entry key-ref="setAccountStatusRequest" value-ref="closeAccountMessageBuilder" />
+				<entry key-ref="paymentRequest" value-ref="paymentMessageBuilder" />
+				<entry key-ref="verifyPasscodeRequest" value-ref="TINValidationMessageBuilder" />
+				<entry key-ref="getBillSummariesRequest" value-ref="billInquiryMessageBuilder" />
+				<entry key-ref="billPaymentRequest" value-ref="billPaymentMessageBuilder" />
+				<entry key-ref="getBillPaymentRequest" value-ref="tokenInquiryMessageBuilder" />
+			</map>
+		</property>
+	</bean>
+{code}
+The message builder (defined in bank-message-builder.xml) will then construct the message and the result of that
+will be passed on to the switchComponent, which will handle the communications with the Bank switch. On message returning from the Switch
+the message will go to createRegisterCustomerResponse (defined in bank-response.xml). Then back to the JMS

@@ -1,0 +1,23 @@
+h1. How to use Bank Sim
+
+Link to Bank Sim on FT:
+
+[https://lon02-ft36-app-01.func.company.net:8443/atmx-sim/bankSimi.jsp|https://lon02-ft36-app-01.func.company.net:8443/atmx-sim/bankSimi.jsp]
+
+Locally:
+
+[http://localhost/atmx-sim/bankSimi.jsp|http://localhost/atmx-sim/bankSimi.jsp]
+
+*Note* Please change the hostname to access other environments Bank sim.
+
+h2. To Run
+
+# Click on the {color:#008000}startBankSim{color} button to start the Bank simulator. You would see ‘true’ under the ‘Running’ column and the ‘Bank Sim Instructions’ block will be seen at the bottom of the page.
+# ‘Set KYC’ field allows you to choose and set the desired KYC for the simulator. By default the simulator is set to KYC0.
+# Once you choose the KYC, please click on {color:#008000}submitBank{color} button.
+# The other fields under the ‘Bank Sim Instructions’ can be used to set the additional instructions on the simulator.
+# For example you can choose the value PAN in ‘Set Reject Type 1’ and enter the value for the pan in the ‘Set Reject Value 1’ field. You will also need to enter the ‘Set Response code’ value. Then click on {color:#008000}submitBank{color} button. Now the simulator will reject all the requests made by that PAN with the entered response code.
+# Similarly AMOUNT & MSISDN can also be set in the reject instructions. This allows for the testing of any combination of error codes.
+# To stop the Bank simulator please click on the {color:#008000}stopBankSim{color} button.
+# Click the {color:#008000}Reset{color} button to clear the instructions fields.
+# Once you have set an error code all responses will be returned that way (if they fit the criteria set earlier. When you finish testing, remember to reset to response code 00

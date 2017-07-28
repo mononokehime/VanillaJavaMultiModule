@@ -1,0 +1,36 @@
+<project>
+	<bannerLeft>
+		<src>https://.net/confluence/download/attachments/425986/global.logo</src>
+		<href>index.html</href>
+	</bannerLeft>
+	<!-- START SNIPPET: skin-configuration -->
+	<skin>
+		<groupId>lt.velykis.maven.skins</groupId>
+		<artifactId>reflow-maven-skin</artifactId>
+		<version>1.0.0</version>
+	</skin>
+	<!-- END SNIPPET: skin-configuration -->
+	<body>
+		<menu name="Main">
+			<item name="Home" href="index.html"/>
+			<item name="Release Notes" href="release-notes.html"/>
+		</menu>
+		<menu ref="parent" inherit="top"/>
+		<menu name="Development">
+			<item name="Javadoc" href="apidocs/index.html"/>
+		</menu>
+		<menu ref="modules" inherit="top"/>
+		<menu name="Maven documentation" ref="reports" inherit="bottom"/>
+	</body>
+	<custom>
+		<!-- START SNIPPET: skin-customisation -->
+		<reflowSkin>
+			<theme>bootswatch-united</theme>
+			<skinAttribution>false</skinAttribution>
+			<highlightJs>true</highlightJs>
+			<slogan>BankIS</slogan>
+			<protocolRelativeURLs>${protocol.relative.urls.reflow}</protocolRelativeURLs>
+		</reflowSkin>
+		<!-- END SNIPPET: skin-customisation -->
+	</custom>
+</project>
