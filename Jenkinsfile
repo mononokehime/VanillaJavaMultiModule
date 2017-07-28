@@ -13,7 +13,9 @@ pipeline {
         stage ('Build') {
             steps {
                 sh 'mvn clean install'
+                junit 'target/surefire-reports/*.xml'
             }
+
             post {
                 success {
                     echo "Success"
