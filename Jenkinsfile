@@ -24,5 +24,16 @@ pipeline {
                 }
             }
         }
+        stage('SonarQube analysis') {
+            steps {
+                script {
+                  // requires SonarQube Scanner 2.8+
+                  scannerHome = tool 'SonarQube Scanner 3.0.3'
+                }
+                withSonarQubeEnv('Sonar Server 6.4') {
+                  sh "${scannerHome}/bin/sonar-scanner"
+                }
+              }
+          }
     }
 }
