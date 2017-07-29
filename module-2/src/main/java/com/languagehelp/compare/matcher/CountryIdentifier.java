@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
  * Determines a country from the supplied String. Currently supports the following regex
  * <code>
  * usaMatch = "(us|u.s.|usa|u.s.a|u.s.a.|american)"
- * australiaMatch = "(australia|aus|oz|aussie|aust)"
- * nzMatch = "(nz|new zealand)"
+ * AUSTRALIA_MATCH = "(australia|aus|oz|aussie|aust)"
+ * NZ_MATCH = "(nz|new zealand)"
  * <p/>
  * </code>
  */
@@ -23,37 +23,82 @@ public final class CountryIdentifier {
 
     }
 
-    private final static String usaMatch = "(^us$|u.s.|usa|u.s.a|u.s.a.|american)";
-    private final static Pattern usaMatchPattern =
-            Pattern.compile(usaMatch);
-    private final static String australiaMatch = "(australia|aus|oz|aussie|aust)";
-    private final static Pattern australiaMatchPattern =
-            Pattern.compile(australiaMatch);
-    private final static String nzMatch = "(nz|new zealand|kiwi)";
-    private final static Pattern nzMatchPattern =
-            Pattern.compile(nzMatch);
-    private final static String dutchMatch = "(dutch)";
-    private final static Pattern dutchMatchPattern =
-            Pattern.compile(dutchMatch);
-    private final static String argentinaMatch = "(argentine|argentina)";
-    private final static Pattern argentinaMatchPattern =
-            Pattern.compile(argentinaMatch);
-    private final static String germanyMatch = "(germany)";
-    private final static Pattern germanyMatchPattern =
-            Pattern.compile(germanyMatch);
-    private final static String brazilMatch = "(brazil)";
-    private final static Pattern brazilMatchPattern =
-            Pattern.compile(brazilMatch);
-    private static final Map<Pattern, Locale> patterns = new HashMap<>();
+    /**
+     * Match US
+     */
+    private static final String USA_MATCH = "(^us$|u.s.|usa|u.s.a|u.s.a.|american)";
+    /**
+     * US pattern
+     */
+    private static final Pattern USA_MATCH_PATTERN =
+            Pattern.compile(USA_MATCH);
+    /**
+     * Matching pattern for named country
+     */
+    private static final String AUSTRALIA_MATCH = "(australia|aus|oz|aussie|aust)";
+    /**
+     * Compiled pattern
+     */
+    private static final Pattern AUSTRALIA_MATCH_PATTERN =
+            Pattern.compile(AUSTRALIA_MATCH);
+    /**
+     * Matching pattern for named country
+     */
+    private static final String NZ_MATCH = "(nz|new zealand|kiwi)";
+    /**
+     * Compiled pattern
+     */
+    private static final Pattern NZ_MATCH_PATTERN =
+            Pattern.compile(NZ_MATCH);
+    /**
+     * Matching pattern for named country
+     */
+    private static final String DUTCH_MATCH = "(dutch)";
+    /**
+     * Compiled pattern
+     */
+    private static final Pattern DUTCH_MATCH_PATTERN =
+            Pattern.compile(DUTCH_MATCH);
+    /**
+     * Matching pattern for named country
+     */
+    private static final String ARGENTINA_MATCH = "(argentine|argentina)";
+    /**
+     * Compiled pattern
+     */
+    private static final Pattern ARGENTINA_MATCH_PATTERN =
+            Pattern.compile(ARGENTINA_MATCH);
+    /**
+     * Matching pattern for named country
+     */
+    private static final String GERMANY_MATCH = "(germany)";
+    /**
+     * Compiled pattern
+     */
+    private static final Pattern GERMANY_MATCH_PATTERN =
+            Pattern.compile(GERMANY_MATCH);
+    /**
+     * Matching pattern for named country
+     */
+    private static final String BRAZIL_MATCH = "(brazil)";
+    /**
+     * Compiled pattern
+     */
+    private static final Pattern BRAZIL_MATCH_PATTERN =
+            Pattern.compile(BRAZIL_MATCH);
+    /**
+     * Map containing all matchers
+     */
+    private static final Map<Pattern, Locale> PATTERNS = new HashMap<>();
 
     static {
-        patterns.put(usaMatchPattern, Locale.US);
-        patterns.put(australiaMatchPattern, new Locale.Builder().setLanguage("en").setRegion("AU").build());
-        patterns.put(nzMatchPattern, new Locale.Builder().setLanguage("en").setRegion("NZ").build());
-        patterns.put(dutchMatchPattern, new Locale.Builder().setLanguage("en").setRegion("NL").build());
-        patterns.put(argentinaMatchPattern, new Locale.Builder().setLanguage("es").setRegion("AR").build());
-        patterns.put(germanyMatchPattern, new Locale.Builder().setLanguage("en").setRegion("DE").build());
-        patterns.put(brazilMatchPattern, new Locale.Builder().setLanguage("pt").setRegion("BR").build());
+        PATTERNS.put(USA_MATCH_PATTERN, Locale.US);
+        PATTERNS.put(AUSTRALIA_MATCH_PATTERN, new Locale.Builder().setLanguage("en").setRegion("AU").build());
+        PATTERNS.put(NZ_MATCH_PATTERN, new Locale.Builder().setLanguage("en").setRegion("NZ").build());
+        PATTERNS.put(DUTCH_MATCH_PATTERN, new Locale.Builder().setLanguage("en").setRegion("NL").build());
+        PATTERNS.put(ARGENTINA_MATCH_PATTERN, new Locale.Builder().setLanguage("es").setRegion("AR").build());
+        PATTERNS.put(GERMANY_MATCH_PATTERN, new Locale.Builder().setLanguage("en").setRegion("DE").build());
+        PATTERNS.put(BRAZIL_MATCH_PATTERN, new Locale.Builder().setLanguage("pt").setRegion("BR").build());
     }
 
     /**
@@ -65,10 +110,10 @@ public final class CountryIdentifier {
     public static Locale getCountry(String text) {
         // lowercase and set to "" if null
         final String tidyText = (text != null) ? text.toLowerCase().trim() : "";
-        for (final Pattern pattern : patterns.keySet()) {
+        for (final Pattern pattern : PATTERNS.keySet()) {
             //final Matcher match = pattern.matcher(tidyText).m;
             if (pattern.matcher(tidyText).matches()) {
-                return patterns.get(pattern);
+                return PATTERNS.get(pattern);
             }
         }
         // if there is no match, return null

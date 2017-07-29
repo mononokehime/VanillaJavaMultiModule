@@ -7,10 +7,25 @@ import java.util.Map;
  * The meat categories
  */
 public enum MeatCategoryEnum implements Category {
+    /**
+     * Enum for named meat
+     */
     BEEF(1),
+    /**
+     * Enum for named meat
+     */
     PORK(2),
+    /**
+     * Enum for named meat
+     */
     LAMB(3),
+    /**
+     * Enum for named meat
+     */
     POULTRY(4),
+    /**
+     * Enum for named meat
+     */
     UNCATEGORISED(5);
     /**
      * Map of items
@@ -23,8 +38,15 @@ public enum MeatCategoryEnum implements Category {
         }
     }
 
+    /**
+     * The enum value
+     */
     private final int value;
 
+    /**
+     * Contructor
+     * @param value the to construct
+     */
     MeatCategoryEnum(int value) {
         this.value = value;
     }

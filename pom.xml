@@ -23,12 +23,12 @@
 		<maven-javadoc-plugin.version>2.10.4</maven-javadoc-plugin.version>
 		<maven-project-info-reports-plugin.version>2.9</maven-project-info-reports-plugin.version>
 		<maven-site-plugin.version>3.6</maven-site-plugin.version>
-		<maven-sortpom-plugin.version>2.3.1</maven-sortpom-plugin.version>
 		<maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
 		<maven-surefire-report-plugin.version>2.20</maven-surefire-report-plugin.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<slf4j.version>1.7.5</slf4j.version>
+		<sortpom-maven-plugin.version>2.8.0</sortpom-maven-plugin.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -70,10 +70,11 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
+			<!-- https://mvnrepository.com/artifact/com.github.ekryd.sortpom/sortpom-maven-plugin -->
 			<plugin>
-				<groupId>com.google.code.sortpom</groupId>
-				<artifactId>maven-sortpom-plugin</artifactId>
-				<version>${maven-sortpom-plugin.version}</version>
+				<groupId>com.github.ekryd.sortpom</groupId>
+				<artifactId>sortpom-maven-plugin</artifactId>
+				<version>${sortpom-maven-plugin.version}</version>
 				<configuration>
 					<createBackupFile>false</createBackupFile>
 					<expandEmptyElements>false</expandEmptyElements>
@@ -90,6 +91,27 @@
 							<goal>sort</goal>
 						</goals>
 						<phase>verify</phase>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${maven-checkstyle-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<phase>verify</phase>
+						<configuration>
+							<configLocation>${user.dir}/src/main/build/checkstyle.xml</configLocation>
+							<suppressionsLocation>${user.dir}/src/main/build/checkstyle-suppressions.xml</suppressionsLocation>
+							<encoding>UTF-8</encoding>
+							<consoleOutput>true</consoleOutput>
+							<failsOnError>true</failsOnError>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -123,14 +145,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 			</plugin>
-			<!--<plugin>-->
-			<!--<groupId>org.apache.maven.plugins</groupId>-->
-			<!--<artifactId>maven-checkstyle-plugin</artifactId>-->
-			<!--<version>${maven-checkstyle-plugin.version}</version>-->
-			<!--<configuration>-->
-			<!--<suppressionsLocation>${project.basedir}/src/main/build/checkstyle-suppressions.xml</suppressionsLocation>-->
-			<!--</configuration>-->
-			<!--</plugin>-->
 		</plugins>
 	</build>
 	<reporting>

@@ -6,7 +6,8 @@ package com.languagehelp.compare.matcher;
 public interface CategoryIdentifier {
 
     /**
-     * Determines the category an item belongs to based on the String provided by using regex matching in the implementations
+     * Determines the category an item belongs to based on the String provided by using
+     * regex matching in the implementations
      *
      * @param text the text to parse
      * @return the category
