@@ -30,6 +30,15 @@
 		<slf4j.version>1.7.5</slf4j.version>
 		<sortpom-maven-plugin.version>2.8.0</sortpom-maven-plugin.version>
 	</properties>
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.sonarsource.java/sonar-jacoco-listeners -->
+		<dependency>
+			<groupId>org.sonarsource.java</groupId>
+			<artifactId>sonar-jacoco-listeners</artifactId>
+			<version>4.12.0.11033</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -70,6 +79,7 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
+
 			<!-- https://mvnrepository.com/artifact/com.github.ekryd.sortpom/sortpom-maven-plugin -->
 			<plugin>
 				<groupId>com.github.ekryd.sortpom</groupId>
@@ -126,6 +136,7 @@
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>${maven-dependency-plugin.version}</version>
 			</plugin>
+			<!-- failsafe plugin is meant for running integration tests -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
@@ -141,9 +152,19 @@
 				<artifactId>maven-site-plugin</artifactId>
 				<version>${maven-site-plugin.version}</version>
 			</plugin>
+			<!-- surefire plugin is designed to run unit tests -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<!-- configuration for jacoco -->
+				<configuration>
+					<properties>
+						<property>
+							<name>listener</name>
+							<value>org.sonar.java.jacoco.JUnitListener</value>
+						</property>
+					</properties>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
