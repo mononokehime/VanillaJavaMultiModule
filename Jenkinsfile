@@ -12,7 +12,7 @@ pipeline {
 
         stage ('Build') {
             steps {
-                sh 'mvn clean install'
+                sh 'mvn clean install verify'
                 junit '**/target/surefire-reports/TEST-*.xml'
                 checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '', unHealthy: ''
             }
@@ -31,7 +31,8 @@ pipeline {
                   scannerHome = tool 'SonarQube Scanner 3.0.3'
                 }
                 withSonarQubeEnv('Sonar Server 6.4') {
-                  sh "${scannerHome}/bin/sonar-scanner"
+                  sh 'mvn sonar:sonar'
+
                 }
               }
           }
