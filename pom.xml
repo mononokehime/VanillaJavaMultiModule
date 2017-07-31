@@ -13,6 +13,8 @@
 	</modules>
 	<properties>
 		<additionalparam>-Xdoclint:none</additionalparam>
+		<jacoco-maven-plugin.version>0.7.8</jacoco-maven-plugin.version>
+		<jacoco.destFile>${user.dir}/target/jacoco_analysis/jacoco.exec</jacoco.destFile>
 		<!-- Generic properties -->
 		<java.version>1.8</java.version>
 		<junit.version>4.12</junit.version>
@@ -28,21 +30,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<slf4j.version>1.7.5</slf4j.version>
+		<sonar.jacoco.reportPaths>${jacoco.destFile}</sonar.jacoco.reportPaths>
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sortpom-maven-plugin.version>2.8.0</sortpom-maven-plugin.version>
-		<sonar.jacoco.reportMissing.force.zero>true</sonar.jacoco.reportMissing.force.zero>
-		<sonar.jacoco.reportPath>${jacoco.destFile}</sonar.jacoco.reportPath>
-		<jacoco.destFile>${user.dir}/target/jacoco_analysis/jacoco.exec</jacoco.destFile>
-		<jacoco-maven-plugin.version>0.7.8</jacoco-maven-plugin.version>
 	</properties>
-	<dependencies>
-		<!-- https://mvnrepository.com/artifact/org.sonarsource.java/sonar-jacoco-listeners -->
-		<dependency>
-			<groupId>org.sonarsource.java</groupId>
-			<artifactId>sonar-jacoco-listeners</artifactId>
-			<version>4.12.0.11033</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -57,14 +48,18 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.sonarsource.java/sonar-jacoco-listeners -->
+		<dependency>
+			<groupId>org.sonarsource.java</groupId>
+			<artifactId>sonar-jacoco-listeners</artifactId>
+			<version>4.12.0.11033</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 	<build>
 		<pluginManagement>
 			<plugins>
-				<plugin>
-					<groupId>org.jacoco</groupId>
-					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>${jacoco-maven-plugin.version}</version>
-				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
@@ -85,10 +80,14 @@
 					<artifactId>maven-surefire-report-plugin</artifactId>
 					<version>${maven-surefire-report-plugin.version}</version>
 				</plugin>
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<version>${jacoco-maven-plugin.version}</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
-
 			<!-- https://mvnrepository.com/artifact/com.github.ekryd.sortpom/sortpom-maven-plugin -->
 			<plugin>
 				<groupId>com.github.ekryd.sortpom</groupId>
